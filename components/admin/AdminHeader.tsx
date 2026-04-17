@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -12,14 +13,75 @@ const BREADCRUMBS: Record<string, string> = {
   '/admin/testimonials': 'Testimonials',
 }
 
+const NAV = [
+  {
+    label: 'Dashboard',
+    href: '/admin',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Products',
+    href: '/admin/products',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Categories',
+    href: '/admin/categories',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Orders',
+    href: '/admin/orders',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Testimonials',
+    href: '/admin/testimonials',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'View Store',
+    href: '/',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    ),
+  },
+]
+
 export default function AdminHeader() {
   const pathname = usePathname()
   const router = useRouter()
 
-  // Handle dynamic edit routes
   let title = BREADCRUMBS[pathname] ?? 'Admin'
   if (pathname.match(/^\/admin\/products\/.+\/edit$/)) {
     title = 'Products / Edit Product'
+  }
+
+  function isActive(href: string) {
+    if (href === '/admin') return pathname === '/admin'
+    return pathname.startsWith(href)
   }
 
   async function handleLogout() {
@@ -29,31 +91,28 @@ export default function AdminHeader() {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
-      <div>
-        <h1 className="text-base font-bold text-gray-900">{title}</h1>
-      </div>
-      <div className="flex items-center gap-4">
-        {/* Notification bell */}
-        <button className="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-toyota-red rounded-full" />
-        </button>
+    <header className="bg-white border-b border-gray-200 flex-shrink-0">
+      {/* Main header row */}
+      <div className="h-14 flex items-center justify-between px-4 lg:px-6">
+        {/* Logo (mobile only) + title */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:hidden">
+            <div className="w-7 h-7 bg-toyota-red rounded flex items-center justify-center">
+              <span className="text-white font-black text-xs">T</span>
+            </div>
+          </div>
+          <h1 className="text-sm font-bold text-gray-900">{title}</h1>
+        </div>
 
-        {/* Avatar + logout */}
         <div className="flex items-center gap-2">
+          {/* Avatar */}
           <div className="w-8 h-8 rounded-full bg-toyota-red flex items-center justify-center text-white font-bold text-xs">
             A
           </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-sm font-semibold text-gray-900 leading-tight">Admin</p>
-            <p className="text-[10px] text-gray-400">admin@toyotaparts.com</p>
-          </div>
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="ml-2 text-xs text-gray-400 hover:text-red-500 transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
             title="Log out"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,6 +121,27 @@ export default function AdminHeader() {
           </button>
         </div>
       </div>
+
+      {/* Mobile sub-nav — hidden on desktop (sidebar handles nav there) */}
+      <nav className="lg:hidden flex overflow-x-auto border-t border-gray-100 bg-gray-950 no-scrollbar">
+        {NAV.map((item) => {
+          const active = isActive(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 px-4 py-2.5 text-[10px] font-semibold whitespace-nowrap flex-shrink-0 border-b-2 transition-colors ${
+                active
+                  ? 'border-toyota-red text-toyota-red'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          )
+        })}
+      </nav>
     </header>
   )
 }

@@ -12,10 +12,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminGuard>
       <div className="flex min-h-screen bg-gray-100">
-        <AdminSidebar />
+        <div className="hidden lg:flex">
+          <AdminSidebar />
+        </div>
         <div className="flex flex-col flex-1 min-w-0">
           <AdminHeader />
-          <main className="flex-1 p-6 overflow-auto">{children}</main>
+          <main className="flex-1 p-4 lg:p-6 overflow-auto">{children}</main>
         </div>
       </div>
     </AdminGuard>
