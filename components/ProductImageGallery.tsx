@@ -1,0 +1,112 @@
+'use client'
+
+import { useState } from 'react'
+import type { Part } from '@/lib/types'
+
+interface ProductImageGalleryProps {
+  part: Part
+}
+
+export default function ProductImageGallery({ part }: ProductImageGalleryProps) {
+  const images = part.images && part.images.length > 0 ? part.images : []
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  
+  const currentImage = images[selectedIndex]
+  
+  const discount = part.compareAtPrice
+    ? Math.round(((part.compareAtPrice - part.price) / part.compareAtPrice) * 100)
+    : 0
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Main image Container */}
+      <div className="bg-white rounded-2xl aspect-square flex items-center justify-center border border-gray-100 relative overflow-hidden shadow-sm group">
+        {currentImage ? (
+          <div className="relative w-full h-full">
+            <img 
+              key={currentImage} // Key helps with re-triggering entrance animations
+              src={currentImage} 
+              alt={part.name} 
+              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+            />
+            {/* Overlay hint */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl mb-3 animate-pulse">
+                {part.categoryId === 'engine' ? '⚙️' :
+                 part.categoryId === 'brakes' ? '🔴' :
+                 part.categoryId === 'suspension' ? '🛞' :
+                 part.categoryId === 'electrical' ? '⚡' :
+                 part.categoryId === 'cooling' ? '❄️' : '🔧'}
+              </div>
+              <p className="font-mono text-sm text-gray-400 uppercase tracking-widest">{part.partNumber}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Badges */}
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+          {discount > 0 && (
+            <span className="bg-toyota-red text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg shadow-toyota-red/20 transform -rotate-1">
+              Save {discount}%
+            </span>
+          )}
+          {part.brand === 'Genuine OEM' && (
+            <span className="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg shadow-blue-600/20">
+              Genuine OEM
+            </span>
+          )}
+        </div>
+
+        {/* Navigation arrows (only if multiple images) */}
+        {images.length > 1 && (
+          <>
+            <button 
+              onClick={() => setSelectedIndex((prev) => (prev - 1 + images.length) % images.length)}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-sm"
+              aria-label="Previous image"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              onClick={() => setSelectedIndex((prev) => (prev + 1) % images.length)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-sm"
+              aria-label="Next image"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Thumbnails strip */}
+      {images.length > 1 && (
+        <div className="flex gap-3 overflow-x-auto pb-2 pt-1 -mx-1 px-1 no-scrollbar">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedIndex(i)}
+              className={`w-20 h-20 rounded-xl border-2 flex-shrink-0 flex items-center justify-center cursor-pointer transition-all duration-300 overflow-hidden relative flex-none ${
+                i === selectedIndex 
+                  ? 'border-toyota-red ring-4 ring-toyota-red/10 scale-95' 
+                  : 'border-gray-100 hover:border-gray-300 hover:scale-105 opacity-70 hover:opacity-100'
+              }`}
+            >
+              <img src={img} alt={`${part.name} view ${i + 1}`} className="w-full h-full object-cover" />
+              {i === selectedIndex && (
+                <div className="absolute inset-0 bg-toyota-red/5" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
