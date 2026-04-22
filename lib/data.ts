@@ -22,9 +22,50 @@ export const ENGINE_OPTIONS: Record<string, string[]> = {
   '4Runner': ['4.0L V6 (1GR-FE)', '2.7L 4-Cylinder (2TR-FE)'],
 }
 
+function cel(year: number, disp: string, code: string, engine: string): Vehicle {
+  return { id: `cel-${year}-${disp}-${code}`, year, make: 'Toyota', model: 'Celica', engine }
+}
+
+const celicaVehicles: Vehicle[] = [
+  // Generation 7 (T230) 2000–2006 — 1ZZ-FE / 2ZZ-GE
+  ...[2000, 2001, 2002, 2003, 2004, 2005, 2006].flatMap(y => [
+    cel(y, '18', '1zz', '1.8L 4-Cylinder (1ZZ-FE)'),
+    cel(y, '18', '2zz', '1.8L 4-Cylinder (2ZZ-GE)'),
+  ]),
+  // Generation 6 (T200) 1994–1999 — 5S-FE / 3S-GE
+  ...[1994, 1995, 1996, 1997, 1998, 1999].flatMap(y => [
+    cel(y, '22', '5sfe', '2.2L 4-Cylinder (5S-FE)'),
+    cel(y, '20', '3sge', '2.0L 4-Cylinder (3S-GE)'),
+  ]),
+  // Generation 5 (T180) 1990–1993 — 5S-FE / 3S-GTE
+  ...[1990, 1991, 1992, 1993].flatMap(y => [
+    cel(y, '22', '5sfe', '2.2L 4-Cylinder (5S-FE)'),
+    cel(y, '20t', '3sgte', '2.0L Turbo (3S-GTE)'),
+  ]),
+  // Generation 4 (T160) 1986–1989 — 3S-FE / 3S-GTE
+  ...[1986, 1987, 1988, 1989].flatMap(y => [
+    cel(y, '20', '3sfe', '2.0L 4-Cylinder (3S-FE)'),
+    cel(y, '20t', '3sgte', '2.0L Turbo (3S-GTE)'),
+  ]),
+  // Generation 3 (A60) 1982–1985 — 22R / 2S-E
+  ...[1982, 1983, 1984, 1985].flatMap(y => [
+    cel(y, '22', '22r', '2.2L 4-Cylinder (22R)'),
+    cel(y, '20', '2se', '2.0L 4-Cylinder (2S-E)'),
+  ]),
+  // Generation 2 (A40) 1978–1981 — 20R / 22R
+  ...[1978, 1979, 1980, 1981].flatMap(y => [
+    cel(y, '20', '20r', '2.0L 4-Cylinder (20R)'),
+    cel(y, '22', '22r', '2.2L 4-Cylinder (22R)'),
+  ]),
+  // Generation 1 (A20) 1970–1977 — 2T-C / 18R
+  ...[1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977].flatMap(y => [
+    cel(y, '16', '2tc', '1.6L 4-Cylinder (2T-C)'),
+    cel(y, '20', '18r', '2.0L 4-Cylinder (18R)'),
+  ]),
+]
+
 export const vehicles: Vehicle[] = [
-  { id: 'cel-2003-18-1zz', year: 2003, make: 'Toyota', model: 'Celica', engine: '1.8L 4-Cylinder (1ZZ-FE)' },
-  { id: 'cel-2003-18-2zz', year: 2003, make: 'Toyota', model: 'Celica', engine: '1.8L 4-Cylinder (2ZZ-GE)' },
+  ...celicaVehicles,
   { id: 'cam-2020-25', year: 2020, make: 'Toyota', model: 'Camry', engine: '2.5L 4-Cylinder (2AR-FE)' },
   { id: 'cam-2020-35v6', year: 2020, make: 'Toyota', model: 'Camry', engine: '3.5L V6 (2GR-FE)' },
   { id: 'hil-2022-28d', year: 2022, make: 'Toyota', model: 'Hilux', engine: '2.8L Diesel (1GD-FTV)' },

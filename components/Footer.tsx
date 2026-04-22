@@ -126,7 +126,7 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Celica by Year</h4>
             <ul className="space-y-2">
-              {[2000, 2001, 2002, 2003, 2004, 2005].map((year) => (
+              {[2000, 2001, 2002, 2003, 2004, 2005, 2006].map((year) => (
                 <li key={year}>
                   <Link href={`/shop?model=Celica&year=${year}`} className="text-sm text-gray-400 hover:text-white transition-colors">
                     {year} Toyota Celica
