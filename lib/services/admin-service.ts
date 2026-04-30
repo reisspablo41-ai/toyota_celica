@@ -103,8 +103,8 @@ export async function getAdminProducts(options: {
   }
 
   if (options.query) {
-    // Basic search across name, part_number, sku
-    query = query.or(`name.ilike.%${options.query}%,part_number.ilike.%${options.query}%,sku.ilike.%${options.query}%`)
+    const q = `%${options.query}%`
+    query = query.or(`name.ilike.${q},part_number.ilike.${q},sku.ilike.${q},description.ilike.${q},oem_cross_ref.ilike.${q}`)
   }
 
   if (options.limit) {
@@ -134,9 +134,22 @@ export async function getPartBySku(sku: string) {
 
   const { data, error } = await supabaseAdmin
     .from('parts')
-    .select('*, categories(name), part_images(url, is_primary)')
+    .select('*, categories:category_id(name), part_images(url, is_primary)')
     .eq('sku', sku)
     .single()
+    
+  // If the above fails, let's try an even simpler select as fallback
+  if (error && error.code !== 'PGRST116') {
+    console.error('getPartBySku error:', error)
+    const { data: simpleData, error: simpleError } = await supabaseAdmin
+      .from('parts')
+      .select('*')
+      .eq('sku', sku)
+      .single()
+    
+    if (simpleError) throw simpleError
+    return simpleData ? mapPart(simpleData) : null
+  }
 
   if (error) {
     if (error.code === 'PGRST116') return null // Not found
@@ -159,4 +172,16 @@ export async function getCategoryById(id: string) {
     throw error
   }
   return data ? mapCategory(data) : null
+}
+
+export async function getAllReviews() {
+  if (!supabaseAdmin) throw new Error('Supabase admin client not initialized')
+
+  const { data, error } = await supabaseAdmin
+    .from('reviews')
+    .select('*, parts(name)')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
 }

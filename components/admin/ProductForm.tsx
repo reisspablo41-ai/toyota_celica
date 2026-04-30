@@ -18,7 +18,9 @@ async function uploadImagesToStorage(sku: string, images: UploadedImage[]): Prom
       continue
     }
     const ext = img.file.name.split('.').pop() ?? 'jpg'
-    const path = `products/${sku}/${img.id}.${ext}`
+    // Sanitize SKU for storage path (remove/replace characters that might break Supabase Storage)
+    const safeSku = sku.replace(/[^a-zA-Z0-9-_]/g, '_')
+    const path = `products/${safeSku}/${img.id}.${ext}`
     const { error } = await supabase.storage.from(BUCKET).upload(path, img.file, { upsert: true })
     if (error) throw new Error(`Upload failed for ${img.name}: ${error.message}`)
     const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(path)

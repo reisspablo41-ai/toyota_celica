@@ -224,3 +224,20 @@ export async function getStoreCategories(): Promise<Category[]> {
 
   return (data ?? []).map(mapDbCategory)
 }
+
+export async function getStoreStats() {
+  const [
+    { count: totalParts },
+    { data: vehicles },
+  ] = await Promise.all([
+    db.from('parts').select('*', { count: 'exact', head: true }).eq('is_active', true),
+    db.from('vehicles').select('model'),
+  ])
+
+  const uniqueModels = new Set(vehicles?.map(v => v.model)).size
+
+  return {
+    totalParts: totalParts || 0,
+    totalModels: uniqueModels || 0,
+  }
+}

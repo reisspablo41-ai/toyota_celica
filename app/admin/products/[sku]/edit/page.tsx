@@ -9,14 +9,17 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { sku } = await params
+  const { sku: encodedSku } = await params
+  const sku = decodeURIComponent(encodedSku)
   const part = await getPartBySku(sku)
   return { title: part ? `Edit – ${part.name}` : 'Edit Product' }
 }
 
 export default async function EditProductPage({ params }: Props) {
-  const { sku } = await params
+  const { sku: encodedSku } = await params
+  const sku = decodeURIComponent(encodedSku)
   const part = await getPartBySku(sku)
+  
   if (!part) notFound()
 
   return (

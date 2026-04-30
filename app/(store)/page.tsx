@@ -3,8 +3,8 @@ import Link from 'next/link'
 import FitmentFilter from '@/components/FitmentFilter'
 import PartCard from '@/components/PartCard'
 import Testimonials from '@/components/Testimonials'
-import { categories, testimonials } from '@/lib/data'
-import { getFeaturedParts } from '@/lib/services/store-service'
+import { testimonials } from '@/lib/data'
+import { getFeaturedParts, getStoreCategories, getStoreStats } from '@/lib/services/store-service'
 
 export const metadata: Metadata = {
   title: 'ToyotaParts Direct – Genuine & Aftermarket Toyota Spare Parts',
@@ -36,7 +36,11 @@ const WHY_ITEMS = [
 
 
 export default async function HomePage() {
-  const featuredParts = await getFeaturedParts(4)
+  const [featuredParts, categories, stats] = await Promise.all([
+    getFeaturedParts(4),
+    getStoreCategories(),
+    getStoreStats(),
+  ])
   return (
     <>
       {/* Hero Section */}
@@ -93,8 +97,8 @@ export default async function HomePage() {
               {/* Stats */}
               <div className="mt-10 grid grid-cols-3 gap-6 border-t border-gray-700 pt-8">
                 {[
-                  { value: '35,000+', label: 'Parts in Stock' },
-                  { value: '12 Models', label: 'Toyota Lines Covered' },
+                  { value: `${stats.totalParts.toLocaleString()}+`, label: 'Parts in Stock' },
+                  { value: `${stats.totalModels} Models`, label: 'Toyota Lines Covered' },
                   { value: '99.2%', label: 'Fitment Accuracy' },
                 ].map((stat) => (
                   <div key={stat.label}>
